@@ -1,0 +1,6 @@
+module Pods_MicroBit {
+  umbrella header "Pods-MicroBit-umbrella.h"
+
+  export *
+  module * { export * }
+}

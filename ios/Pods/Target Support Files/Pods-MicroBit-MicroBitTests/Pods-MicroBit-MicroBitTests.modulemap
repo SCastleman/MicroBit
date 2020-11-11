@@ -1,0 +1,6 @@
+module Pods_MicroBit_MicroBitTests {
+  umbrella header "Pods-MicroBit-MicroBitTests-umbrella.h"
+
+  export *
+  module * { export * }
+}
