@@ -10,6 +10,7 @@ MERGED from [com.facebook.flipper:flipper-network-plugin:0.54.0] /Users/samuelca
 MERGED from [com.facebook.flipper:flipper-fresco-plugin:0.54.0] /Users/samuelcastleman/.gradle/caches/transforms-2/files-2.1/dd7dfafbb0af41b4347f18654ea5c436/flipper-fresco-plugin-0.54.0/AndroidManifest.xml:8:1-15:12
 MERGED from [:react-native-async-storage_async-storage] /Users/samuelcastleman/Documents/MicroBit/node_modules/@react-native-async-storage/async-storage/android/build/intermediates/library_manifest/debug/AndroidManifest.xml:2:1-9:12
 MERGED from [:react-native-ble-plx] /Users/samuelcastleman/Documents/MicroBit/node_modules/react-native-ble-plx/android/build/intermediates/library_manifest/debug/AndroidManifest.xml:2:1-12:12
+MERGED from [:react-native-vector-icons] /Users/samuelcastleman/Documents/MicroBit/node_modules/react-native-vector-icons/android/build/intermediates/library_manifest/debug/AndroidManifest.xml:2:1-11:12
 MERGED from [com.facebook.react:react-native:0.63.3] /Users/samuelcastleman/.gradle/caches/transforms-2/files-2.1/1972ab4ea9187f5cee6c35e3264666a8/jetified-react-native-0.63.3/AndroidManifest.xml:2:1-13:12
 MERGED from [androidx.swiperefreshlayout:swiperefreshlayout:1.0.0] /Users/samuelcastleman/.gradle/caches/transforms-2/files-2.1/37b6f551bc5ae153b0b627de8f563815/swiperefreshlayout-1.0.0/AndroidManifest.xml:17:1-22:12
 MERGED from [org.webkit:android-jsc:r245459] /Users/samuelcastleman/.gradle/caches/transforms-2/files-2.1/6dd6245206e34676e1ee3aa6ee0f68c9/android-jsc-r245459/AndroidManifest.xml:2:1-11:12
@@ -183,6 +184,8 @@ MERGED from [:react-native-async-storage_async-storage] /Users/samuelcastleman/D
 MERGED from [:react-native-async-storage_async-storage] /Users/samuelcastleman/Documents/MicroBit/node_modules/@react-native-async-storage/async-storage/android/build/intermediates/library_manifest/debug/AndroidManifest.xml:5:5-7:41
 MERGED from [:react-native-ble-plx] /Users/samuelcastleman/Documents/MicroBit/node_modules/react-native-ble-plx/android/build/intermediates/library_manifest/debug/AndroidManifest.xml:5:5-7:41
 MERGED from [:react-native-ble-plx] /Users/samuelcastleman/Documents/MicroBit/node_modules/react-native-ble-plx/android/build/intermediates/library_manifest/debug/AndroidManifest.xml:5:5-7:41
+MERGED from [:react-native-vector-icons] /Users/samuelcastleman/Documents/MicroBit/node_modules/react-native-vector-icons/android/build/intermediates/library_manifest/debug/AndroidManifest.xml:7:5-9:41
+MERGED from [:react-native-vector-icons] /Users/samuelcastleman/Documents/MicroBit/node_modules/react-native-vector-icons/android/build/intermediates/library_manifest/debug/AndroidManifest.xml:7:5-9:41
 MERGED from [com.facebook.react:react-native:0.63.3] /Users/samuelcastleman/.gradle/caches/transforms-2/files-2.1/1972ab4ea9187f5cee6c35e3264666a8/jetified-react-native-0.63.3/AndroidManifest.xml:7:5-9:41
 MERGED from [com.facebook.react:react-native:0.63.3] /Users/samuelcastleman/.gradle/caches/transforms-2/files-2.1/1972ab4ea9187f5cee6c35e3264666a8/jetified-react-native-0.63.3/AndroidManifest.xml:7:5-9:41
 MERGED from [androidx.swiperefreshlayout:swiperefreshlayout:1.0.0] /Users/samuelcastleman/.gradle/caches/transforms-2/files-2.1/37b6f551bc5ae153b0b627de8f563815/swiperefreshlayout-1.0.0/AndroidManifest.xml:20:5-44
