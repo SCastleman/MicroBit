@@ -1,7 +1,7 @@
 //@flow
 
-import React, {useEffect, useState} from 'react';
-import {StyleSheet, ScrollView, View, StatusBar} from 'react-native';
+import React, {useEffect, useState, useMemo} from 'react';
+import {StyleSheet, ScrollView, View, StatusBar, Button} from 'react-native';
 
 import {Base64} from 'js-base64';
 
@@ -17,10 +17,14 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 
 import style from './style.js';
 
+import NotifService from './NotifService';
+
 const temperatureServiceUUID: string = 'e95d6100-251d-470a-a062-fa1922dfa9a8';
 const temperatureCharacteristicUUID: string =
   'e95d9250-251d-470a-a062-fa1922dfa9a8';
-const temperaturePeriodUUID: string = 'e95d1b25-251d-470a-a062-fa1922dfa9a8';
+//const temperaturePeriodUUID: string = 'e95d1b25-251d-470a-a062-fa1922dfa9a8';
+
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 type dataContainer = {
   timeStamp: Number,
@@ -34,6 +38,15 @@ const App = () => {
     Array<dataContainer>,
   >([]);
   const [loading, setLoading] = useState(false);
+  const [showStartDate, setShowStartDate] = useState(false);
+  const [showEndDate, setShowEndDate] = useState(false);
+  const [startDate, setStartDate] = useState(-1);
+  const [endDate, setEndDate] = useState(8640000000000000);
+  const [startTime, setStartTime] = useState(0);
+  const [endTime, setEndTime] = useState(0);
+  const [startMode, setStartMode] = useState('date');
+  const [endMode, setEndMode] = useState('date');
+  const notifications = new NotifService();
 
   const scanAndConnect = async () => {
     // Attempt to retrieve a stored UUID from a previous session,
@@ -60,10 +73,6 @@ const App = () => {
       console.log('device: ', tempDevice.name);
       if (tempDevice?.name?.includes('micro:bit')) {
         manager.stopDeviceScan();
-        manager.onDeviceDisconnected(tempDevice.id, (error, Device) => {
-          setDevice(new Device());
-          // Send push notification here
-        });
         AsyncStorage.setItem('microBitID', tempDevice.id);
         setDevice(tempDevice);
         setLoading(false);
@@ -88,12 +97,21 @@ const App = () => {
 
     // the temperature is provided as a base64 value, so we convert it
     // to an number (base 10) to get its value in celcius.
-    temperatureChar.monitor((error, {value}) => {
-      if (error) {
+    temperatureChar.monitor((error, update) => {
+      if (error || !update) {
         return;
       }
-      const temperature = Base64.toUint8Array(value)[0];
+      const temperature = Base64.toUint8Array(update.value)[0];
       setTemperatureArray((t) => [{temperature, timeStamp: Date.now()}, ...t]);
+    });
+
+    manager.onDeviceDisconnected(device.id, (err, lost) => {
+      if (err) {
+        console.log('error:', err);
+        return;
+      }
+      setDevice(new Device());
+      notifications.localNotif();
     });
   };
 
@@ -107,6 +125,12 @@ const App = () => {
         .catch((e) => console.log(e));
     }
   }, [device]);
+
+  const filteredList = useMemo(() => {
+    temperatureArray.filter((t) => {
+      t.timeStamp > startDate && t.timestamp < endDate;
+    });
+  }, [temperatureArray, startDate, endDate]);
 
   return (
     <>
@@ -131,6 +155,31 @@ const App = () => {
         )}
       </View>
       <ScrollView style={styles.background} contentContainerStyle={styles.row}>
+        <Button onPress={() => setShowStartDate(true)} title="Set Start Date" />
+        {showStartDate && (
+          <DateTimePicker
+            mode={startMode}
+            value={new Date()}
+            onChange={(event, date) => {
+              setShowStartDate(false);
+              date && setStartDate(date.getTime());
+            }}
+          />
+        )}
+        <Button title="Set End Date" onPress={() => setShowEndDate(true)} />
+        {showEndDate && (
+          <DateTimePicker
+            mode={endMode}
+            value={new Date()}
+            onChange={(event, value) => {
+              if (endMode === 'date') {
+                setEndMode('time');
+                value && setEndDate(value.getTime());
+              }
+              setShowEndDate(false);
+            }}
+          />
+        )}
         {temperatureArray.map((temp, i) => {
           const values = Object.values(temp);
           return <CollectionCell cell={values} key={i} />;

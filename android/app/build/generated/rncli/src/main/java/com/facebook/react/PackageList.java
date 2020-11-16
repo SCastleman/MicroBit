@@ -13,8 +13,12 @@ import java.util.ArrayList;
 
 // @react-native-async-storage/async-storage
 import com.reactnativecommunity.asyncstorage.AsyncStoragePackage;
+// @react-native-community/datetimepicker
+import com.reactcommunity.rndatetimepicker.RNDateTimePickerPackage;
 // react-native-ble-plx
 import com.polidea.reactnativeble.BlePackage;
+// react-native-push-notification
+import com.dieam.reactnativepushnotification.ReactNativePushNotificationPackage;
 // react-native-vector-icons
 import com.oblador.vectoricons.VectorIconsPackage;
 
@@ -63,7 +67,9 @@ public class PackageList {
     return new ArrayList<>(Arrays.<ReactPackage>asList(
       new MainReactPackage(mConfig),
       new AsyncStoragePackage(),
+      new RNDateTimePickerPackage(),
       new BlePackage(),
+      new ReactNativePushNotificationPackage(),
       new VectorIconsPackage()
     ));
   }

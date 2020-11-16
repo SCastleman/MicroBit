@@ -72,7 +72,7 @@ PushNotification.configure({
    * - Specified if permissions (ios) and token (android and ios) will requested or not,
    * - if not, you must call PushNotificationsHandler.requestPermissions() later
    */
-  requestPermissions: true,
+  requestPermissions: false,
 });
 
 export default handler;

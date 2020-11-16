@@ -5,6 +5,18 @@ import style from './style';
 
 const styles = StyleSheet.create({
   ...style,
+  temperature: {
+    position: 'absolute',
+    marginHorizontal: 0,
+    left: 0,
+    right: 0,
+    marginTop: '15%',
+    color: '#fff',
+    textAlign: 'center',
+    textAlignVertical: 'center',
+    fontSize: 30,
+    fontWeight: 'bold',
+  },
 });
 
 /** Reusable cell to populate with data. Used by almost all screens.
@@ -15,28 +27,14 @@ const styles = StyleSheet.create({
  * @param {Number} numLines Number of lines for the header text. Defaults to 1 */
 
 const CollectionCell = (props) => {
-  const {custStat, custStyle, custHeader, cell, numLines} = props;
+  const {custStat, custStyle, cell} = props;
   const [headerText, statText] = cell;
   return (
     <View style={custStyle}>
       <Text style={custStat}>
         {`Time: ${new Date(statText).toLocaleTimeString()}`}
       </Text>
-      <Text
-        style={{
-          position: 'absolute',
-          marginHorizontal: 0,
-          left: 0,
-          right: 0,
-          marginTop: '15%',
-          color: '#fff',
-          textAlign: 'center',
-          textAlignVertical: 'center',
-          fontSize: 30,
-          fontWeight: 'bold',
-        }}>
-        {`${headerText}° Celcius`}
-      </Text>
+      <Text style={styles.temperature}>{`${headerText}° Celcius`}</Text>
     </View>
   );
 };
