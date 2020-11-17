@@ -1,6 +1,6 @@
 //@flow
 
-import React, {useEffect, useState, useMemo} from 'react';
+import React, {useEffect, useState, useMemo, useRef} from 'react';
 import {StyleSheet, ScrollView, View, StatusBar, Button} from 'react-native';
 
 import {Base64} from 'js-base64';
@@ -40,24 +40,30 @@ const App = () => {
   const [loading, setLoading] = useState(false);
   const [showStartDate, setShowStartDate] = useState(false);
   const [showEndDate, setShowEndDate] = useState(false);
-  const [startDate, setStartDate] = useState(-1);
-  const [endDate, setEndDate] = useState(8640000000000000);
-  const [startTime, setStartTime] = useState(0);
-  const [endTime, setEndTime] = useState(0);
-  const [startMode, setStartMode] = useState('date');
-  const [endMode, setEndMode] = useState('date');
+  const [startDate, setStartDate] = useState(new Date(Date.now()));
+  const [endDate, setEndDate] = useState(new Date());
+  const [mode, setMode] = useState('date');
   const notifications = new NotifService();
+  const mounted = useRef(false);
+  //const [allValues, setAllValues] = useState({
+  //  loading: false,
+  //  showStartDate: false,
+  //  showEndDate: false,
+
+  //})
 
   const scanAndConnect = async () => {
     // Attempt to retrieve a stored UUID from a previous session,
     // and if successful, connect to that device and update the
-    // state with it.
-    const storedId = await AsyncStorage.getItem('microBitId');
-    if (storedId) {
-      console.log('found previous device');
-      setDevice(await manager.connectToDevice(storedId));
-      return;
-    }
+    // state with it. Not currently working so commented out.
+
+    //const storedId = await AsyncStorage.getItem('microBitID');
+    //if (storedId) {
+    //  console.log('found previous device');
+    //  setDevice(await manager.connectToDevice(storedId));
+    //  setLoading(false);
+    //  return;
+    //}
 
     // If there was no stored ID, start the device search and
     // provide it with a callback that, on finding a device with
@@ -111,6 +117,7 @@ const App = () => {
         return;
       }
       setDevice(new Device());
+      notifications.cancelAll();
       notifications.localNotif();
     });
   };
@@ -126,11 +133,59 @@ const App = () => {
     }
   }, [device]);
 
+  const onStartDateChange = (event, value) => {
+    value && setStartDate(value.getTime());
+    if (mode === 'date') {
+      value && setStartDate(value.getTime());
+    } else {
+      value &&
+        setStartDate((d) => {
+          const returnDate = new Date(d);
+          returnDate.setHours(value.getHours());
+          returnDate.setMinutes(value.getMinutes());
+          returnDate.setSeconds(0);
+          return returnDate.getTime();
+        });
+    }
+    setShowEndDate(false);
+  };
+
+  useEffect(() => {
+    if (mounted.current) {
+      if (showEndDate === false) {
+        if (mode === 'date') {
+          setMode('time');
+          setShowEndDate(true);
+        } else {
+          setMode('date');
+        }
+      }
+    } else {
+      mounted.current = true;
+    }
+  }, [showEndDate]);
+
   const filteredList = useMemo(() => {
-    temperatureArray.filter((t) => {
-      t.timeStamp > startDate && t.timestamp < endDate;
+    return temperatureArray.filter((t) => {
+      return t.timeStamp >= startDate && t.timeStamp <= endDate;
     });
   }, [temperatureArray, startDate, endDate]);
+
+  const onEndDateChange = (event, value) => {
+    if (mode === 'date') {
+      value && setEndDate(value.getTime());
+    } else {
+      value &&
+        setEndDate((d) => {
+          const returnDate = new Date(d);
+          returnDate.setHours(value.getHours());
+          returnDate.setMinutes(value.getMinutes());
+          returnDate.setSeconds(0);
+          return returnDate.getTime();
+        });
+    }
+    setShowEndDate(false);
+  };
 
   return (
     <>
@@ -143,6 +198,7 @@ const App = () => {
             title="Connected"
             color="#00FF00"
             onPress={() => setDevice(new Device())}
+            style={{paddingRight: '5%'}}
           />
         ) : (
           <Icon
@@ -151,70 +207,63 @@ const App = () => {
             name="bluetooth-b"
             color={loading ? '#D3D3D3' : '#FF0000'}
             onPress={() => !loading && scanAndConnect()}
+            style={{paddingRight: '5%'}}
           />
         )}
+        <View style={{width: '40%', paddingHorizontal: '2.5%'}}>
+          <Button
+            onPress={() => setShowStartDate(true)}
+            title="Set Start Date"
+          />
+        </View>
+        <View style={{width: '40%', paddingHorizontal: '2.5%'}}>
+          <Button
+            title="Set Ending Date"
+            onPress={() => setShowEndDate(true)}
+          />
+        </View>
       </View>
-      <ScrollView style={styles.background} contentContainerStyle={styles.row}>
-        <Button onPress={() => setShowStartDate(true)} title="Set Start Date" />
-        {showStartDate && (
-          <DateTimePicker
-            mode={startMode}
-            value={new Date()}
-            onChange={(event, date) => {
-              setShowStartDate(false);
-              date && setStartDate(date.getTime());
-            }}
-          />
-        )}
-        <Button title="Set End Date" onPress={() => setShowEndDate(true)} />
-        {showEndDate && (
-          <DateTimePicker
-            mode={endMode}
-            value={new Date()}
-            onChange={(event, value) => {
-              if (endMode === 'date') {
-                setEndMode('time');
-                value && setEndDate(value.getTime());
-              }
-              setShowEndDate(false);
-            }}
-          />
-        )}
-        {temperatureArray.map((temp, i) => {
-          const values = Object.values(temp);
-          return <CollectionCell cell={values} key={i} />;
-        })}
-      </ScrollView>
+      {showStartDate && (
+        <DateTimePicker
+          mode={mode}
+          value={new Date(startDate)}
+          onChange={onStartDateChange}
+        />
+      )}
+      {showEndDate && (
+        <DateTimePicker
+          mode={mode}
+          value={new Date(endDate)}
+          onChange={onEndDateChange}
+        />
+      )}
+      {!showStartDate && !showEndDate && (
+        <ScrollView
+          style={styles.background}
+          contentContainerStyle={styles.row}>
+          {filteredList.map((temp, i) => {
+            const values = Object.values(temp);
+            return <CollectionCell cell={values} key={i} />;
+          })}
+        </ScrollView>
+      )}
     </>
   );
 };
 
 const styles = StyleSheet.create({
   ...style,
-  scrollView: {
-    backgroundColor: Colors.lighter,
-    paddingHorizontal: '5%',
-  },
-  engine: {
-    position: 'absolute',
-    right: 0,
-  },
   body: {
     backgroundColor: Colors.white,
   },
   iconContainer: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    flexDirection: 'row',
     width: '100%',
-    height: '20%',
+    height: '10%',
     backgroundColor: '#161616',
-    paddingTop: '10%',
-    paddingBottom: '10%',
-  },
-  bigIcon: {
-    height: '80%',
-    width: '80%',
+    paddingTop: '5%',
+    paddingLeft: '5%',
+    elevation: 3,
   },
 });
 

@@ -21,32 +21,19 @@ const style = {
   },
   row: {
     paddingVertical: 30,
-    marginBottom: '5%',
     flexWrap: 'wrap',
     flexDirection: 'row',
     justifyContent: 'space-around', // causing odd numbers to be centered, undesirable
     backgroundColor: appBackground,
   },
-  box: {
-    ...shadow,
-    width: '40%',
-    height: 0,
-    paddingBottom: '40%',
-    backgroundColor: boxBackground,
-    marginBottom: '2.5%',
-    marginTop: '2.5%',
-    borderRadius: 20,
-  },
   bigBox: {
     ...shadow,
     width: '80%',
-    height: 0,
     paddingBottom: '40%',
     backgroundColor: boxBackground,
     marginBottom: '2.5%',
     marginTop: '2.5%',
     borderRadius: 20,
-    overflow: 'scroll',
   },
   stat: {
     position: 'absolute',
