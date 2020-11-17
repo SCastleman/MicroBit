@@ -2,6 +2,7 @@ import React from 'react';
 import {Text, View, StyleSheet, ViewPropTypes} from 'react-native';
 import PropTypes from 'prop-types';
 import style from './style';
+import chroma from 'chroma-js';
 
 const styles = StyleSheet.create({
   ...style,
@@ -29,12 +30,18 @@ const styles = StyleSheet.create({
 const CollectionCell = (props) => {
   const {custStat, custStyle, cell} = props;
   const [headerText, statText] = cell;
+  const f = chroma.scale(['green', 'yellow', 'red']);
+  console.log(f(headerText / 34).toString());
   return (
     <View style={custStyle}>
       <Text style={custStat}>
         {`Time: ${new Date(statText).toLocaleTimeString()}`}
       </Text>
-      <Text style={styles.temperature}>{`${headerText}° Celcius`}</Text>
+      <Text
+        style={{
+          ...styles.temperature,
+          color: headerText < 32 ? f(headerText / 40).toString() : '#FF0000',
+        }}>{`${headerText}° Celcius`}</Text>
     </View>
   );
 };
