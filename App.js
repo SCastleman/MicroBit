@@ -26,6 +26,8 @@ const temperatureCharacteristicUUID: string =
 
 import DateTimePicker from '@react-native-community/datetimepicker';
 
+let temperatureArray: Array<Number> = [];
+
 type dataContainer = {
   timeStamp: Number,
   temperature: Number,
@@ -38,19 +40,17 @@ const App = () => {
     Array<dataContainer>,
   >([]);
   const [loading, setLoading] = useState(false);
-  const [showStartDate, setShowStartDate] = useState(false);
-  const [showEndDate, setShowEndDate] = useState(false);
-  const [startDate, setStartDate] = useState(new Date(Date.now()));
-  const [endDate, setEndDate] = useState(new Date());
-  const [mode, setMode] = useState('date');
   const notifications = new NotifService();
-  const mounted = useRef(false);
-  //const [allValues, setAllValues] = useState({
-  //  loading: false,
-  //  showStartDate: false,
-  //  showEndDate: false,
-
-  //})
+  const [endDate, setEndDate] = useState({
+    date: new Date().getTime() + 86400000,
+    mode: 'date',
+    show: false,
+  });
+  const [startDate, setStartDate] = useState({
+    date: new Date().getTime(),
+    mode: 'date',
+    show: false,
+  });
 
   const scanAndConnect = async () => {
     // Attempt to retrieve a stored UUID from a previous session,
@@ -134,62 +134,68 @@ const App = () => {
   }, [device]);
 
   const onStartDateChange = (event, value) => {
-    value && setStartDate(value.getTime());
-    if (mode === 'date') {
-      value && setStartDate(value.getTime());
-    } else {
-      value &&
-        setStartDate((d) => {
-          const returnDate = new Date(d);
-          returnDate.setHours(value.getHours());
-          returnDate.setMinutes(value.getMinutes());
-          returnDate.setSeconds(0);
-          return returnDate.getTime();
-        });
-    }
-    setShowEndDate(false);
-  };
-
-  useEffect(() => {
-    if (mounted.current) {
-      if (showEndDate === false) {
-        if (mode === 'date') {
-          setMode('time');
-          setShowEndDate(true);
-        } else {
-          setMode('date');
-        }
+    console.log(event);
+    if (startDate.mode === 'date') {
+      if (value) {
+        const returnDate = value.getTime();
+        setStartDate({...startDate, mode: 'time', date: returnDate});
       }
     } else {
-      mounted.current = true;
+      if (value) {
+        const returnDate = new Date(startDate.date);
+        returnDate.setHours(value.getHours());
+        returnDate.setMinutes(value.getMinutes());
+        returnDate.setSeconds(0);
+        setStartDate({mode: 'date', date: returnDate, show: false});
+      }
     }
-  }, [showEndDate]);
+  };
+
+  //useEffect(() => {
+  //  if (mounted.current) {
+  //    if (endDate.show === false) {
+  //      if (mode === 'date') {
+  //        setMode('time');
+  //        setShowEndDate(true);
+  //      } else {
+  //        setMode('date');
+  //      }
+  //    }
+  //  } else {
+  //    mounted.current = true;
+  //  }
+  //}, [showEndDate]);
 
   const filteredList = useMemo(() => {
     return temperatureArray.filter((t) => {
-      return t.timeStamp >= startDate && t.timeStamp <= endDate;
+      return t.timeStamp >= startDate.date && t.timeStamp <= endDate.date;
     });
   }, [temperatureArray, startDate, endDate]);
 
   const onEndDateChange = (event, value) => {
-    if (mode === 'date') {
-      value && setEndDate(value.getTime());
+    if (endDate.mode === 'date') {
+      if (value) {
+        const returnValue = value.getTime();
+        setEndDate({show: true, date: returnValue, mode: 'time'});
+      } else {
+        setEndDate({...endDate, show: false});
+      }
     } else {
-      value &&
-        setEndDate((d) => {
-          const returnDate = new Date(d);
-          returnDate.setHours(value.getHours());
-          returnDate.setMinutes(value.getMinutes());
-          returnDate.setSeconds(0);
-          return returnDate.getTime();
-        });
+      if (value) {
+        const returnDate = new Date(endDate.date);
+        returnDate.setHours(value.getHours());
+        returnDate.setMinutes(value.getMinutes());
+        returnDate.setSeconds(0);
+        setEndDate({show: false, mode: 'time', date: returnDate.getTime()});
+      } else {
+        setEndDate({...endDate, show: false});
+      }
     }
-    setShowEndDate(false);
   };
 
   return (
     <>
-      <StatusBar barStyle="dark-content" />
+      <StatusBar barStyle="light-content" />
       <View style={styles.iconContainer}>
         {device.id ? (
           <Icon
@@ -212,41 +218,43 @@ const App = () => {
         )}
         <View style={{width: '40%', paddingHorizontal: '2.5%'}}>
           <Button
-            onPress={() => setShowStartDate(true)}
+            onPress={() =>
+              setStartDate({...startDate, show: true, mode: 'date'})
+            }
             title="Set Start Date"
           />
         </View>
         <View style={{width: '40%', paddingHorizontal: '2.5%'}}>
           <Button
             title="Set Ending Date"
-            onPress={() => setShowEndDate(true)}
+            onPress={() => setEndDate({...endDate, show: true, mode: 'date'})}
           />
         </View>
       </View>
-      {showStartDate && (
+      {startDate.show && (
         <DateTimePicker
-          mode={mode}
-          value={new Date(startDate)}
+          mode={startDate.mode}
+          value={new Date(startDate.date)}
           onChange={onStartDateChange}
+          is24Hour={true}
         />
       )}
-      {showEndDate && (
+      {endDate.show && (
         <DateTimePicker
-          mode={mode}
-          value={new Date(endDate)}
+          mode={endDate.mode}
+          value={new Date(endDate.date)}
           onChange={onEndDateChange}
+          is24Hour={true}
         />
       )}
-      {!showStartDate && !showEndDate && (
-        <ScrollView
-          style={styles.background}
-          contentContainerStyle={styles.row}>
-          {filteredList.map((temp, i) => {
+      <ScrollView style={styles.background} contentContainerStyle={styles.row}>
+        {!startDate.show &&
+          !endDate.show &&
+          filteredList.map((temp, i) => {
             const values = Object.values(temp);
             return <CollectionCell cell={values} key={i} />;
           })}
-        </ScrollView>
-      )}
+      </ScrollView>
     </>
   );
 };
