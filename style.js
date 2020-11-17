@@ -31,8 +31,6 @@ const style = {
     width: '80%',
     paddingBottom: '40%',
     backgroundColor: boxBackground,
-    marginBottom: '2.5%',
-    marginTop: '2.5%',
     borderRadius: 20,
   },
   stat: {

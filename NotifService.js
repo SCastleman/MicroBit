@@ -47,6 +47,7 @@ export default class NotifService {
   }
 
   localNotif(soundName) {
+    this.cancelAll();
     this.lastId++;
     PushNotification.localNotification({
       /* Android Only Properties */

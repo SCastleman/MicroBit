@@ -30,8 +30,7 @@ const styles = StyleSheet.create({
 const CollectionCell = (props) => {
   const {custStat, custStyle, cell} = props;
   const [headerText, statText] = cell;
-  const f = chroma.scale(['green', 'yellow', 'red']);
-  console.log(f(headerText / 34).toString());
+  const f = chroma.scale(['#00FF00', '#CCCC00', '#FF0000']);
   return (
     <View style={custStyle}>
       <Text style={custStat}>
@@ -40,7 +39,7 @@ const CollectionCell = (props) => {
       <Text
         style={{
           ...styles.temperature,
-          color: headerText < 32 ? f(headerText / 40).toString() : '#FF0000',
+          color: f((headerText - 20) / 14).toString(),
         }}>{`${headerText}° Celcius`}</Text>
     </View>
   );

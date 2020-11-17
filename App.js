@@ -1,6 +1,6 @@
 //@flow
 
-import React, {useEffect, useState, useMemo, useRef} from 'react';
+import React, {useEffect, useState, useMemo} from 'react';
 import {StyleSheet, ScrollView, View, StatusBar, Button} from 'react-native';
 
 import {Base64} from 'js-base64';
@@ -25,8 +25,6 @@ const temperatureCharacteristicUUID: string =
 //const temperaturePeriodUUID: string = 'e95d1b25-251d-470a-a062-fa1922dfa9a8';
 
 import DateTimePicker from '@react-native-community/datetimepicker';
-
-let temperatureArray: Array<Number> = [];
 
 type dataContainer = {
   timeStamp: Number,
@@ -133,6 +131,25 @@ const App = () => {
     }
   }, [device]);
 
+  useEffect(() => {
+    AsyncStorage.getItem('temperature', (err, result) => {
+      if (err) {
+        return;
+      }
+      console.log(result);
+      const parsed = result ? JSON.parse(result) : [];
+      console.log('parsed', parsed);
+      setTemperatureArray(parsed);
+    });
+  }, []);
+
+  useEffect(() => {
+    AsyncStorage.setItem(
+      'temperature',
+      temperatureArray ? JSON.stringify(temperatureArray) : [],
+    );
+  }, [temperatureArray]);
+
   const onStartDateChange = (event, value) => {
     console.log(event);
     if (startDate.mode === 'date') {
@@ -168,7 +185,7 @@ const App = () => {
 
   const filteredList = useMemo(() => {
     return temperatureArray.filter((t) => {
-      return t.timeStamp >= startDate.date && t.timeStamp <= endDate.date;
+      return t.timeStamp >= startDate.date && t.timeStamp < endDate.date;
     });
   }, [temperatureArray, startDate, endDate]);
 
